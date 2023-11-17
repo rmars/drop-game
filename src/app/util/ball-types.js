@@ -1,7 +1,8 @@
 const massFactor = 1.293;
 const defaultCategory = 0b0001; // for matterjs collisions
 
-const ballOrder = ["red", "blue", "orange", "yellow", "green"];
+const ballOrder = ["one", "two", "three", "four", "five"];
+const colors = ["#4D9DE0", "#E15554", "#E1BC29", "#3BB273", "#7768AE"];
 
 // when dropping random balls, only drop smaller balls
 const randomBalls = ballOrder.slice(0, -1);
@@ -50,34 +51,34 @@ export const generateBallProps = ball => {
 export const largestBall = ballOrder[ballOrder.length - 1];
 
 export const ballTypes = {
-  red: {
+  one: {
     radius: 10,
-    color: "red",
-    label: "red",
+    color: colors[0],
+    label: "one",
     category: defaultCategory,
   },
-  blue: {
+  two: {
     radius: 20,
-    color: "blue",
-    label: "blue",
+    color: colors[1],
+    label: "two",
     category: defaultCategory,
   },
-  orange: {
+  three: {
     radius: 30,
-    color: "orange",
-    label: "orange",
+    color: colors[2],
+    label: "three",
     category: defaultCategory,
   },
-  yellow: {
+  four: {
     radius: 40,
-    color: "yellow",
-    label: "yellow",
+    color: colors[3],
+    label: "four",
     category: defaultCategory,
   },
-  green: {
+  five: {
     radius: 80,
-    color: "green",
-    label: "green",
+    color: colors[4],
+    label: "five",
     category: defaultCategory,
   },
 };

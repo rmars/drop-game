@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { Engine, Render, World, Bodies, Events } from "matter-js";
+import React, { useEffect, useRef, useState, useCallback } from "react";
+import { Engine, Render, World, Bodies, Events, Body, Runner } from "matter-js";
+import styles from "./page.module.css";
 import {
   getRandomBall,
   getNextBall,
@@ -9,20 +10,30 @@ import {
   largestBall,
 } from "./util/ball-types.js";
 
+// game colors
+const colors = {
+  background: "#E7D9CD",
+  walls: "#C1A68E",
+};
+
 const wallOptions = {
   isStatic: true,
   label: "walls",
   render: {
-    fillStyle: "blue",
+    fillStyle: colors.walls,
   },
 };
+
+// canvas dimensions for the game
+const width = 300;
+const height = 600;
 
 function DropGame() {
   const boxRef = useRef(null);
   const canvasRef = useRef(null);
   const engine = useRef(Engine.create());
-  const width = 300;
-  const height = 600;
+  const [currentBall, setCurrentBall] = useState();
+
   // if ball 1 and ball 2 collide, we get a (1, 2) as well as a (2, 1) collision
   // event. track resolved collisions so we don't create duplicate balls if two
   // of the same color collide.
@@ -36,7 +47,7 @@ function DropGame() {
       options: {
         width,
         height,
-        background: "rgba(255, 0, 0, 0.5)",
+        background: colors.background,
         wireframes: false,
       },
     });
@@ -51,9 +62,11 @@ function DropGame() {
     );
     const left = Bodies.rectangle(5, height / 2, 10, height, wallOptions);
 
+    setCurrentBall(generateBallProps(getRandomBall()));
+
     World.add(engine.current.world, [floor, right, left]);
 
-    Engine.run(engine.current);
+    Runner.run(engine.current);
     Render.run(render);
 
     Events.on(engine.current, "collisionStart", e => {
@@ -94,24 +107,48 @@ function DropGame() {
     });
   }, []);
 
-  const handleAddCircle = () => {
-    const ballPr = generateBallProps(getRandomBall());
-    console.log("adding", ballPr.label, ballPr.radius);
-    World.add(engine.current.world, [
-      Bodies.circle(150, 0, ballPr.radius, ballPr),
-    ]);
-  };
+  const handleClick = useCallback(
+    e => {
+      var rect = e.target.getBoundingClientRect();
+      const ballX = e.clientX - rect.left; // x position within the element
+
+      setCurrentBall(generateBallProps(getRandomBall()));
+      const nextBall = Bodies.circle(
+        ballX,
+        10,
+        currentBall.radius,
+        currentBall
+      );
+      World.add(engine.current.world, [nextBall]);
+    },
+    [currentBall, setCurrentBall]
+  );
 
   return (
-    <div
-      onClick={handleAddCircle}
-      ref={boxRef}
-      style={{
-        width,
-        height,
-      }}>
-      <canvas ref={canvasRef} />
-    </div>
+    <>
+      <div className={styles.next}>
+        {currentBall && (
+          <span
+            style={{
+              alignSelf: "flex-end",
+              height: currentBall.radius * 2,
+              width: currentBall.radius * 2,
+              backgroundColor: currentBall.render.fillStyle,
+              borderRadius: "50%",
+              display: "inline-block",
+            }}></span>
+        )}
+      </div>
+      <div
+        onClick={handleClick}
+        ref={boxRef}
+        style={{
+          width,
+          height,
+        }}>
+        <canvas ref={canvasRef} />
+      </div>
+    </>
   );
 }
 
