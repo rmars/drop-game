@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState, useCallback } from "react";
-import { Engine, Render, World, Bodies, Events, Body, Runner } from "matter-js";
+import { Engine, Render, World, Bodies, Events, Runner } from "matter-js";
 import styles from "./page.module.css";
 import {
   getRandomBall,

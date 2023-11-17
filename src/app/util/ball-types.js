@@ -1,4 +1,5 @@
-const massFactor = 1.293;
+const massFactor = 2.5;
+const restitutionFactor = 10; // https://brm.io/matter-js/docs/classes/Body.html#property_restitution
 const defaultCategory = 0b0001; // for matterjs collisions
 
 const ballOrder = ["one", "two", "three", "four", "five"];
@@ -24,31 +25,6 @@ export const getNextBall = currBall => {
   }
   return ballOrder[currIdx + 1];
 };
-
-// returns a matter.js options object with one extra property (radius)
-export const generateBallProps = ball => {
-  const ballProps = ballTypes[ball];
-  if (ballProps === null) {
-    console.error("could not find ball props for: ", ball);
-    return {};
-  }
-
-  return {
-    mass: 10,
-    restitution: 0.9,
-    friction: 0.005,
-    render: {
-      fillStyle: ballProps.color,
-    },
-    collisionFilter: {
-      category: ballProps.category,
-    },
-    label: ballProps.label,
-    radius: ballProps.radius,
-  };
-};
-
-export const largestBall = ballOrder[ballOrder.length - 1];
 
 export const ballTypes = {
   one: {
@@ -81,4 +57,30 @@ export const ballTypes = {
     label: "five",
     category: defaultCategory,
   },
+};
+
+export const largestBall = ballOrder[ballOrder.length - 1];
+const largestBallProps = ballTypes[largestBall];
+
+// returns a matter.js options object with one extra property (radius)
+export const generateBallProps = ball => {
+  const ballProps = ballTypes[ball];
+  if (ballProps === null) {
+    console.error("could not find ball props for: ", ball);
+    return {};
+  }
+
+  return {
+    mass: massFactor * ballProps.radius,
+    restitution: ballProps.radius / restitutionFactor / largestBallProps.radius,
+    friction: 0.005,
+    render: {
+      fillStyle: ballProps.color,
+    },
+    collisionFilter: {
+      category: ballProps.category,
+    },
+    label: ballProps.label,
+    radius: ballProps.radius,
+  };
 };
