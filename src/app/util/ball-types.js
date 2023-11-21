@@ -2,7 +2,7 @@ const massFactor = 2.5;
 const restitutionFactor = 10; // https://brm.io/matter-js/docs/classes/Body.html#property_restitution
 const defaultCategory = 0b0001; // for matterjs collisions
 
-const ballOrder = ["one", "two", "three", "four", "five"];
+export const ballOrder = ["one", "two", "three", "four", "five"];
 const colors = ["#4D9DE0", "#E15554", "#E1BC29", "#3BB273", "#7768AE"];
 
 // when dropping random balls, only drop smaller balls
@@ -65,9 +65,8 @@ const largestBallProps = ballTypes[largestBall];
 // returns a matter.js options object with one extra property (radius)
 export const generateBallProps = ball => {
   const ballProps = ballTypes[ball];
-  if (ballProps === null) {
-    console.error("could not find ball props for: ", ball);
-    return {};
+  if (!ballProps) {
+    throw new Error("cannot find ball props");
   }
 
   return {
